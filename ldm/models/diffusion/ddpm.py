@@ -370,25 +370,6 @@ class DDPM(pl.LightningModule):
                 extract_into_tensor(self.sqrt_one_minus_alphas_cumprod, t, x.shape) * x
         )
 
-    #def gmsd_loss(self,pred,target):
-        # 计算梯度
-        #print("pred shape:",pred.shape)
-        #print("target shape:",target.shape)
-    #    weight1 = torch.tensor([[1/3, 0, -1/3], [1/3, 0, -1/3], [1/3, 0, -1/3]], dtype=pred.dtype, device=pred.device)
-    #    weight1 = weight1.unsqueeze(0).repeat(1, 4, 1, 1)  # 使得卷积核的通道数与输入匹配
-    #    weight2 = torch.tensor([[1/3, 1/3, 1/3], [0, 0, 0], [-1/3, -1/3, -1/3]], dtype=pred.dtype, device=pred.device)
-    #    weight2 = weight2.unsqueeze(0).repeat(1, 4, 1, 1)  # 使得卷积核的通道数与输入匹配
-    #    grad1 = F.conv2d(pred, weight1, padding=1) ** 2 + F.conv2d(pred, weight2, padding=1) ** 2
-
-    #    grad2 = F.conv2d(target, weight1, padding=1) ** 2 + F.conv2d(target, weight2, padding=1) ** 2
-
-    #    grad1_sq=torch.sqrt(grad1)
-    #    grad2_sq=torch.sqrt(grad2)
-        # 计算 GMSD
-    #    gmsd_map = (2*grad1_sq*grad2_sq+1e-8) / (grad1 + grad2 + 1e-8)
-    #    GMSD=torch.std(gmsd_map.view(-1))
-    #    return GMSD
-
     def get_loss(self, pred, target, mean=True):
         if self.loss_type == 'l1':
             loss = (target - pred).abs()
@@ -399,8 +380,6 @@ class DDPM(pl.LightningModule):
                 loss = torch.nn.functional.mse_loss(target, pred)
             else:
                 loss = torch.nn.functional.mse_loss(target, pred, reduction='none')
-        #elif self.loss_type == 'GMSD':
-        #    loss = self.gmsd_loss(pred,target)
         else:
             raise NotImplementedError("unknown loss type '{loss_type}'")
 
@@ -440,9 +419,6 @@ class DDPM(pl.LightningModule):
         loss_vlb = (self.lvlb_weights[t] * loss).mean()
         loss_dict.update({f'{log_prefix}/loss_vlb': loss_vlb})
         
-        #loss_gmsd=self.gmsd_loss(model_out, target)
-        #loss_dict.update({f'{log_prefix}/loss_gmsd': loss_gmsd})
-
         loss = loss_simple + self.original_elbo_weight * loss_vlb 
 
         loss_dict.update({f'{log_prefix}/loss': loss})
@@ -450,8 +426,7 @@ class DDPM(pl.LightningModule):
         return loss, loss_dict
 
     def forward(self, x, *args, **kwargs):
-        # b, c, h, w, device, img_size, = *x.shape, x.device, self.image_size
-        # assert h == img_size and w == img_size, f'height and width of image must be {img_size}'
+
         t = torch.randint(0, self.num_timesteps, (x.shape[0],), device=self.device).long()
         return self.p_losses(x, t, *args, **kwargs)
 
@@ -968,20 +943,16 @@ class LatentDiffusion(DDPM):
         return mean_flat(kl_prior) / np.log(2.0)
 
     def gmsd_loss(self,pred,target):
-        # # 计算梯度
-        # print("pred shape:",pred.shape)
-        # print("target shape:",target.shape)
         weight1 = torch.tensor([[1/3, 0, -1/3], [1/3, 0, -1/3], [1/3, 0, -1/3]], dtype=pred.dtype, device=pred.device)
-        weight1 = weight1.unsqueeze(0).repeat(1, 4, 1, 1)  # 使得卷积核的通道数与输入匹配
+        weight1 = weight1.unsqueeze(0).repeat(1, 4, 1, 1)
         weight2 = torch.tensor([[1/3, 1/3, 1/3], [0, 0, 0], [-1/3, -1/3, -1/3]], dtype=pred.dtype, device=pred.device)
-        weight2 = weight2.unsqueeze(0).repeat(1, 4, 1, 1)  # 使得卷积核的通道数与输入匹配
+        weight2 = weight2.unsqueeze(0).repeat(1, 4, 1, 1)
         grad1 = F.conv2d(pred, weight1, padding=1) ** 2 + F.conv2d(pred, weight2, padding=1) ** 2
 
         grad2 = F.conv2d(target, weight1, padding=1) ** 2 + F.conv2d(target, weight2, padding=1) ** 2
 
         grad1_sq=torch.sqrt(grad1)
         grad2_sq=torch.sqrt(grad2)
-        # 计算 GMSD
         gmsd_map = (2*grad1_sq*grad2_sq+1e-8) / (grad1 + grad2 + 1e-8)
         GMSD=torch.std(gmsd_map.view(-1))
         return GMSD
@@ -1027,9 +998,6 @@ class LatentDiffusion(DDPM):
             
         loss_dict.update({f'{prefix}/loss': loss})
 
-        # 释放显存
-        # torch.cuda.empty_cache()
-        
         return loss, loss_dict
 
     def p_mean_variance(self, x, c, t, clip_denoised: bool, return_codebook_ids=False, quantize_denoised=False,
@@ -1599,9 +1567,6 @@ class LatentUpscaleDiffusion(LatentDiffusion):
             prog_row = self._get_denoise_row_from_list(progressives, desc="Progressive Generation")
             log["progressive_row"] = prog_row
 
-        # 释放显存
-        # torch.cuda.empty_cache()
-        
         return log
 
 
