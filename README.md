@@ -2,7 +2,7 @@
 
 - This is the official repository of the paper "Spherical-Nested Diffusion Model for Panoramic Image Outpainting" in ICML 2025.
 
-## 1. Environment Setup
+## :wrench: Requirements
 
 ```sh
 conda env create -f env.yaml
@@ -28,9 +28,19 @@ The prompts for Matterport3D and Structured3D datasets are saved in Matter_promp
 
 ## 3. Pretrained Weights
 - The weights for our SpND model without prompt is in the SpND folder and the weights for the SPND with prompt is in the SPND\_prompt folder.
-- All the weights are given in the [Huggingface]().
+- All the weights are given in the [Huggingface](https://huggingface.co/aberts/SpND/tree/main).
+- Structure
+    
+    | Model_name | Description |
+    | ---------------  | ------------------------------   |
+    | SpND_Matterport3D.ckpt | SpND model trained on Matterport3D |
+    | SpND_Structured3D.ckpt | SpND model trained on Structured3D |
+    | SpND_prompt_Matterport3D.ckpt | SpND model with propmt as input trained on Matterport3D |
+    | SpND_prompt_Structured3D.ckpt | SpND model with propmt as input trained on Structured3D |
+    | SpND_prompt_pers_Structured3D.ckpt | SpND model with propmt as input and a perspective mask trained on Structured3D |
 
-## 4. Training
+
+## <a name="train"></a>:computer: Train
 ### Without Prompts
 ```sh
 CUDA_VISIBLE_DEVICES=0 python train.py --config models/SpND.yaml --data-file image_Matterport3D.txt --gpus 1 --max-epoch 100
@@ -46,7 +56,7 @@ CUDA_VISIBLE_DEVICES=0 python train_prompt.py --config models/SpND.yaml --data-f
 - Set the --mask-file path for training
 
 
-## 5. Testing
+## <a name="inference"></a>:zap: Inference
 
 ### Without Prompts
 The input mask should match the `down_mask_path` config in the model config file.
@@ -59,5 +69,4 @@ The input mask should match the `down_mask_path` config in the model config file
 ```sh
 python -m torch.distributed.launch --nproc_per_node=1 multi_inference_black_new_cfg_prompt.py --config models/SpND.yaml --ckpt <path_to_checkpoint> --data-path image_Matterport3D.txt --prompt-file Matter_prompt.json --mask-file masks/center_mask.png
 ```
-
 

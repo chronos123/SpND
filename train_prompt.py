@@ -3,7 +3,7 @@ from share import *
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from torch.utils.data import DataLoader
-from opensource.dataset_panorama import MyDatasetPrompt
+from dataset_panorama import MyDatasetPrompt
 from cldm.logger import ImageLogger
 from cldm.model import create_model, load_state_dict
 import datetime,os

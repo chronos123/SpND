@@ -17,7 +17,7 @@ from ldm.modules.diffusionmodules.util import (
 )
 from ldm.modules.attention import SpatialTransformer
 from ldm.util import exists
-from ldm.deformable_conv.modules.dcn import SphereDeformableConv2d, DeformableConv2d, SphereDeformableConv2dV2, SphereConv2D, SphereDeformableConv2dV3, SphereDeformableConv2dNoLearnableOffset
+from ldm.deformable_conv.modules.dcn import SphereDeformableConv2d, DeformableConv2d
 
 
 # dummy replace
