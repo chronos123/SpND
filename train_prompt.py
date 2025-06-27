@@ -61,7 +61,7 @@ config_path = args.config
 version = os.path.basename(config_path)
 version = version.split(".")[0][9:]
 
-batch_size = 16
+batch_size = 4
 logger_freq = 5000
 learning_rate = 1e-5
 sd_locked = True
