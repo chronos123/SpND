@@ -2,7 +2,7 @@
 
 This is the official repository of the paper "Spherical-Nested Diffusion Model for Panoramic Image Outpainting" in ICML 2025.
 
-- [Paper](hhttps://openreview.net/forum?id=JVDFkVf4QY)
+- [Paper](https://openreview.net/forum?id=JVDFkVf4QY)
 
 
 ## Overview
