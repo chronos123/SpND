@@ -90,3 +90,15 @@ The input mask should match the `down_mask_path` config in the model config file
 python -m torch.distributed.launch --nproc_per_node=1 multi_inference_black_new_cfg_prompt.py --config models/SpND.yaml --ckpt <path_to_checkpoint> --data-path image_Matterport3D.txt --prompt-file Matter_prompt.json --mask-file masks/center_mask.png --world-size 1
 ```
 
+### Citation
+
+```
+@inproceedings{
+sun2025sphericalnested,
+title={Spherical-Nested Diffusion Model for Panoramic Image Outpainting},
+author={Xiancheng Sun and Senmao Ma and Shengxi Li and Mai Xu and Jingyuan Xia and Lai Jiang and Xin Deng and Jiali Wang},
+booktitle={Forty-second International Conference on Machine Learning},
+year={2025},
+url={https://openreview.net/forum?id=JVDFkVf4QY}
+}
+```

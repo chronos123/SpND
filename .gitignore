@@ -6,6 +6,6 @@ models/control_sd15_ini.ckpt
 pretrained_weights
 annotator/ckpts
 
-
+models--openai--clip-vit-large-patch14
 
 
